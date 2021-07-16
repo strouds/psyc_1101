@@ -2,7 +2,9 @@
 """
 Created on Mon Jul 12 13:37:22 2021
 
-@author: phill
+main python code for interpreting survey results and generating statistics and plots
+
+@author: Stroud Stacy
 """
 
 from datetime import datetime
