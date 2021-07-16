@@ -23,10 +23,14 @@ def importData(filename):
     -------
     data : Dictionary of lists of each response type.
         'entry' = entry number
+        'response time' = time survey response was submitted
         'subjective SES' = MacArthur Scale of Subjective Social Status 
-        'objective SES' = scores of income and education level
-        'property' = scores of ownership of businesses, rental properties, and homes
-        'policies' = scores of questions about redistributive policy support
+        'income' = score of income level responses
+        'education' = score of education level responses
+        'businesses' = score of ownership of businesses
+        'rentals' = score of ownership of rental properties
+        'homes' = score of ownership of homes
+        'policy question' 1 - 4 = score of responses to policy questions
         'politics' = score of political alignment
 
     """
@@ -37,8 +41,7 @@ def importData(filename):
     data['policy question 2'], data['policy question 3'], = [], []
     data['policy question 4'], data['politics'] = [], []
     
-    # results = {}
-    
+    # Dictionaries, used to score the responses
     d_income = {'$10,000 or less' : 0, '$10,001 - $25,000' : 1,
                       '$25,001 - $50,000' : 2, '$50,001 - $75,000' : 3,
                       '$75,001 - $100,000' : 4, '$100,001 - $150,000': 5,
@@ -128,25 +131,22 @@ def importData(filename):
 class SurveyResults(object):
     def __init__(self, data):
         """ Breaks out raw data set into a data structure, scores each section
-        of the survey, and creates a list of individual survey results """
-        
+        of the survey, and calculates statistics for the data sets """
+        # all lists converted to 'array' datatype for linear regression
         self.entries = pylab.array(data['entry'])
         self.response_time = pylab.array(data['response time'])
         
-        # This section scores each of the major sections of the survey for 
-        # each of the results and converts them to Pylab arrays to use with 
-        # the linregress function.
         self.subjective_scores = pylab.array(data['subjective SES'])
 
         self.income = pylab.array(data['income'])
         self.education = pylab.array(data['education'])
-        
+        # combine income and education into an objective SES score
         self.objective_scores = self.income + self.education
         
         self.businesses = pylab.array(data['businesses'])
         self.rentals = pylab.array(data['rentals'])
         self.homes = pylab.array(data['homes'])
-        
+        # combine business, rental, and home ownership into a property score
         self.property_scores = []
         self.property_scores = self.businesses + self.rentals + self.homes
         
@@ -154,7 +154,7 @@ class SurveyResults(object):
         self.policy_2 = pylab.array(data['policy question 2'])
         self.policy_3 = pylab.array(data['policy question 3'])
         self.policy_4 = pylab.array(data['policy question 4'])
-        
+        # combine policy question responses into a policy score
         self.policy_scores = []
         self.policy_scores = self.policy_1 + self.policy_2 + \
             self.policy_3 + self.policy_4
@@ -168,8 +168,8 @@ class SurveyResults(object):
                                  'politics': self.politics}
         
         self.dependent_scores = {'policy scores': self.policy_scores}
-        
-        self.stats = self.genStats() # generate statistics and CSV
+        # generate statistics and save to a CSV file
+        self.stats = self.genStats() 
 
     
     def fitAndPlot(self, independent, dependent, independent_name, dependent_name):
@@ -241,7 +241,7 @@ class SurveyResults(object):
         pylab.title('Date responses arrived\n' +
                     f'Total responses: {len(self.response_time)}')
         pylab.show()
-        
+        # frequency of subjective SES scores
         pylab.hist(self.subjective_scores, bins=10, range=(1,10))
         pylab.xlabel('Subjective SES score')
         pylab.ylabel('Number of responses')
@@ -250,7 +250,7 @@ class SurveyResults(object):
         pylab.title('Subjective SES responses\n' + f'Mean: {mean}, ' +
                     f'Standard deviation: {std_dev}')
         pylab.show()
-        
+        # frequency of objective SES scores
         pylab.hist(self.objective_scores, bins=11, range=(0,10))
         pylab.xlabel('Objective SES score')
         pylab.ylabel('Number of responses')
@@ -259,7 +259,7 @@ class SurveyResults(object):
         pylab.title('Objective SES responses\n' + f'Mean: {mean}, ' +
                     f'Standard deviation: {std_dev}')
         pylab.show()
-        
+        # frequency of property scores
         pylab.hist(self.property_scores, bins=10, range=(0,11))
         pylab.xlabel('Property ownership score')
         pylab.ylabel('Number of responses')
@@ -268,7 +268,7 @@ class SurveyResults(object):
         pylab.title('Property ownership responses\n' + f'Mean: {mean}, ' +
                     f'Standard deviation: {std_dev}')
         pylab.show()
-        
+        # frequency of policy scores
         pylab.hist(self.policy_scores, bins=16, range=(-8,8))
         pylab.xlabel('Policy score')
         pylab.ylabel('Number of responses')
@@ -277,7 +277,7 @@ class SurveyResults(object):
         pylab.title('Policy responses\n' + f'Mean: {mean}, ' +
                     f'Standard deviation: {std_dev}')
         pylab.show()
-        
+        # frequency of political self-report
         pylab.hist(self.politics, bins=5, range=(-2,2))
         pylab.xticks([-2,-1,0,1,2])
         pylab.xlabel('Political preference')
