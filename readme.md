@@ -1,8 +1,16 @@
+figures 0-5 - histograms produced by survey_data.py
+
+figures 6-9 - plots produced by survey_data.py
+
 data.csv - survey results
+
+stats.csv - statistics produced by survey_data.py
+
+run.py - runs the code in survey_data using data from data.csv to produce the statistics and plots used in the Critical Thinking Assignment paper
 
 survey_data.py - main python code for interpreting survey results and generating statistics and plots
 
-run.py - runs the code in survey_data using data from data.csv to produce the statistics and plots used in the Critical Thinking Assignment paper
+
 
 
 
