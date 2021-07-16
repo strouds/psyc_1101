@@ -2,7 +2,9 @@
 """
 Created on Mon Jul 12 15:55:09 2021
 
-@author: phill
+Runs the code in survey_data.py using data in data.csv
+
+@author: Stroud Stacy
 """
 
 import survey_data
